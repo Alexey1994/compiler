@@ -1,0 +1,51 @@
+#типы: число, строка, массив, функция
+
+f = {a, b |
+    c = a + b
+    d = a[0] + b
+    return d
+}
+
+a = [
+    'Alexey',
+    'Borisenko',
+    [106, 45]
+]
+
+f(a, 0)
+
+f(a, {a, b | return a + b})
+
+##################################
+
+while 2 < 3 {
+    break
+    continue
+}
+
+if 2 < 3 {
+    
+}
+else if 3 < 4 {
+    
+}
+else {
+    
+}
+
+##################################
+
+Buffer = { | return [0, 1, msvcrt.malloc(4)]}
+
+write_in_buffer = {buffer, data |
+    if buffer[0] >= buffer[1] {
+        buffer[1] = buffer[1] * 2
+        buffer[2] = msvcrt.realloc(buffer[2], buffer[1] * 4)
+    }
+
+    buffer[2][buffer[0]] = data
+    buffer[0] += 1
+}
+
+buffer = Buffer()
+write_in_buffer(buffer, 1234)

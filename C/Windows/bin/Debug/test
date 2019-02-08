@@ -1,0 +1,12 @@
+sort:    a = 0
+loop_a:  end if a >= length m
+         b = 0
+         next_a if b >= length m
+         next_b if m[a] >= m[b]
+         t = m[a]
+         m[a] = m[b]
+         m[b] = t
+next_b:  b = b + 1
+next_a:  a = a + 1
+         loop_a
+end:

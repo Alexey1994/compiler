@@ -1,0 +1,9 @@
+# depslib dependency file v1.0
+1549400066 source:f:\Программирование2\Приложения\Скрипт\c\src\main.c
+	<system.h>
+	<expression-parser.h>
+
+1549659651 source:f:\Программирование2\Приложения\Скрипт2\c\src\main.c
+	<system.h>
+	<expression-parser.h>
+
