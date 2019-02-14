@@ -299,7 +299,7 @@ Operand_Node* remove_operand_from_stack (Buffer* stack)
     return *(Operand_Node**)(stack->data + stack->length);
 }
 
-
+/*
 void calculate_addresses (Buffer* expressions)
 {
     Buffer** expressions_data;
@@ -314,6 +314,125 @@ void calculate_addresses (Buffer* expressions)
 
     cycle(0, expressions_length, 1)
         Buffer* expression = expressions_data[i];
+        Expression_Node* expression_data = expression->data;
+        N_32 expression_length = expression->length / sizeof(Expression_Node);
+
+        cycle(0, expression_length, 1)
+            Expression_Node* current_node = expression_data + i;
+
+            switch(current_node->type)
+            {
+            case OPERAND:
+                {
+                    add_operand_in_stack(&stack, current_node->data);
+                }
+                break;
+
+            case BINARY_OPERATION:
+                {
+                    Operation* operation = current_node->data;
+                    //printf("%s ", operation->name);
+
+                    if(!strcmp(operation->name, "="))
+                    {
+                        Operand_Node* operand2 = remove_operand_from_stack(&stack);
+                        Operand_Node* operand1 = remove_operand_from_stack(&stack);
+
+                        switch(operand2->type)
+                        {
+                        case NUMBER:
+                            printf("push %d\n", operand2->data);
+                            break;
+
+                        case SEQUENCE:
+                            {
+                                Buffer* sequence = operand2->data;
+                                N_32 sequence_length = sequence->length / sizeof(Operand_Node*);
+                                Operand_Node* sequence_data = sequence->data;
+
+                                cycle(0, sequence_length, 1)
+                                    switch(sequence_data[i].type)
+                                    {
+                                    case VARIABLE:
+                                        printf("push ");
+                                        print_token(sequence_data[i].data);
+                                        printf("\n");
+                                        break;
+
+                                    case ARRAY_INDEX_EXPRESSION:
+                                        //printf("[");
+                                        //print_expression_in_postfix_notation(sequence_data[i].data, &print_operand);
+                                        //printf("]");
+                                        break;
+                                    }
+                                end
+                                //printf("var");
+                            }
+                            break;
+
+                        case LABEL:
+                            printf("error: expected operand after =\n");
+                            //printf("push address\n");
+                            //printf("%d\n", current_address);
+                            //print_token(operand->data);
+                            //printf(":");
+                            break;
+
+                        case ALLOCATE_ARRAY:
+                            {
+                            //printf("[");
+                            Buffer* array = operand2->data;
+                            N_32 array_length = array->length / sizeof(Buffer*);
+                            //Buffer** array_data = array->data;
+                            //cycle(0, array_length, 1)
+                            //    print_expression_in_postfix_notation(array_data[i], &print_operand);
+                            //    printf(",");
+                            //end
+                            //printf("]");
+                            current_address += array_length;
+                            }
+                            break;
+                        }
+
+                        current_address += 10;
+                        //printf("mov");
+                    }
+                }
+                break;
+
+            case UNARY_OPERATION:
+                break;
+            }
+        end
+    end
+}
+*/
+
+
+typedef struct
+{
+    Buffer* expression;
+    N_32    index;
+}
+Body_Node;
+
+
+void calculate_macro_addresses (Buffer* expressions)
+{
+    Body_Node* expressions_data;
+    N_32       expressions_length;
+    N_32       current_address;
+    Buffer     stack;
+
+    initialize_buffer(&stack, 100);
+    current_address = 0;
+    expressions_data = expressions->data;
+    expressions_length = expressions->length / sizeof(Body_Node);
+
+    cycle(0, expressions_length, 1)
+        Body_Node* body_node = expressions_data + i;
+        body_node->index = i;
+        Buffer* expression = body_node->expression;
         Expression_Node* expression_data = expression->data;
         N_32 expression_length = expression->length / sizeof(Expression_Node);
 
@@ -726,11 +845,14 @@ N_8 parse (Input* input)
     while(!end_of_input(input))
     {
         Buffer* expression = read_expression(&parser);
+        Body_Node node;
+
+        node.expression = expression;
         //print_expression_in_postfix_notation(expression, &print_operand);
         //printf("\n");
 
-        cycle(0, sizeof(Buffer*), 1)
-            write_in_buffer(&expressions, ((Byte*)&expression)[i]);
+        cycle(0, sizeof(Body_Node), 1)
+            write_in_buffer(&expressions, ((Byte*)&node)[i]);
         end
 
         /*
@@ -767,7 +889,8 @@ N_8 parse (Input* input)
         //skip_spaces(input);
     }
 
-    calculate_addresses(&expressions);
+    //calculate_addresses(&expressions);
+    calculate_macro_addresses(&expressions);
 
     return 1;
 
