@@ -9,4 +9,6 @@ loop_a:  end if a >= length m
 next_b:  b = b + 1
 next_a:  a = a + 1
          loop_a
-end:
+end:     end
+
+m: [2 1]
