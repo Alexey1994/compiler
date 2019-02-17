@@ -1,3 +1,5 @@
+a: jump a
+
 sort:    a = 0
 loop_a:  end if a >= length m
          b = 0
@@ -8,7 +10,7 @@ loop_a:  end if a >= length m
          m[b] = t
 next_b:  b = b + 1
 next_a:  a = a + 1
-         loop_a
-end:     end
+         jump loop_a
+end:     jump end
 
 m: [2 1]
